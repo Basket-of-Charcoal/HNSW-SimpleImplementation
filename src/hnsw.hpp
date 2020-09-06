@@ -128,14 +128,15 @@ public:
         Data data,
         int responseSize
     ) {
-        int nearestId;
-        double dist;
+        int nearestId = ROOT;
+        double dist = INFINITY;
         for (int i = this->_layerNum-1; i > 0; i--) {
             SearchResponse response = this->searchInSpecificLayer(data,
-                INFINITY, ROOT, i, 1)[0];
+                dist, nearestId, i, 1)[0];
             nearestId = response._nodeId;
             dist = response._distance;
         }
+        // std::cout << "finded " << nearestId << " " << dist << std::endl;
         return this->searchInSpecificLayer(
             data, dist, nearestId, 0, responseSize);
     }

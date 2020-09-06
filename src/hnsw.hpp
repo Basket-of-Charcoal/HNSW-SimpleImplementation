@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <set>
+#include <map>
 #include <cmath>
 #include <iostream>
 #include <algorithm>
@@ -38,7 +39,7 @@ class HNSW {
     int _neighborNum;
     std::vector<Data> _data;
     std::vector<
-        std::vector<Node>
+        std::map<int, Node>
     > _hnswGraph;
     double _level_constant;
     Distance _distance;
@@ -64,7 +65,7 @@ public:
 
         // create empty graph
         for (int i = 0; i < this->_layerNum; i++) {
-            this->_hnswGraph.push_back(std::vector<Node>());
+            this->_hnswGraph.push_back(std::map<int, Node>());
         }
     }
 
@@ -88,10 +89,13 @@ public:
         // insert root node when graph was empty
         if (dataId == ROOT) {
             for (int i = 0; i < this->_layerNum; i++) {
-                this->_hnswGraph[i].push_back(Node());
+                this->_hnswGraph[i][ROOT] = Node();
             }
         }
         else {
+            for (int i = 0; i <= layer; i++) {
+                this->_hnswGraph[i][dataId] = Node();
+            }
             double dist = this->_distance.distance(
                 data, this->_data[ROOT]
             );
@@ -129,7 +133,9 @@ public:
         int responseSize
     ) {
         int nearestId = ROOT;
-        double dist = INFINITY;
+        double dist = this->_distance.distance(
+                data, this->_data[ROOT]
+        );
         for (int i = this->_layerNum-1; i > 0; i--) {
             SearchResponse response = this->searchInSpecificLayer(data,
                 dist, nearestId, i, 1)[0];

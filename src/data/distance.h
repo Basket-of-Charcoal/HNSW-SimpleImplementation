@@ -2,7 +2,7 @@
 #define _DISTANCE
 
 #include <cmath>
-#include "data.hpp"
+#include "data.h"
 
 enum DISTANCE_TYPE {
     EUCLIDIAN,
